@@ -63,17 +63,19 @@ func handleReq(conn net.Conn) {
 		resp, check := validateJson(line, len(line))
 
 		_, err := conn.Write(append(resp, '\n'))
-		fmt.Println(" response is " + string(resp) + " request was " + string(line[:len(line)]))
+		fmt.Println(" response is " + string(resp) + " request was " + string(line[:]))
 		if err != nil {
 			fmt.Println("failed to write response: ", err)
 			return
 		}
+
 		if !check {
 			fmt.Println("request was malformed, terminated connection", conn.RemoteAddr().String())
 			return
 		}
 
 	}
+
 	if err := scanner.Err(); err != nil {
 		fmt.Println("Erorr from reading connection:", err)
 	}
@@ -116,6 +118,7 @@ func validateJson(body []byte, n int) ([]byte, bool) {
 		r, _ := json.Marshal(malResp{Method: "error", Prime: false})
 		return r, false
 	}
+
 	//check if its correct
 	if input.Method == "isPrime" && input.Number != -10100 {
 		isPrime := isPrimeNum(num)
